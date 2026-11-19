@@ -82,7 +82,13 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                if (HOME_URL.equals(url)) view.evaluateJavascript(BRIDGE_JAVASCRIPT, null);
+                if (HOME_URL.equals(url)) {
+                    view.evaluateJavascript(BRIDGE_JAVASCRIPT, null);
+                    // Carga el actualizador de datos incluido en el APK. No modifica el juego principal.
+                    view.evaluateJavascript(
+                            "(function(){var s=document.createElement('script');" +
+                            "s.src='/assets/actualizaciones.js';document.body.appendChild(s);})();", null);
+                }
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {

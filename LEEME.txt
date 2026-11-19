@@ -1,0 +1,86 @@
+1000 GOLES — ACTUALIZACIONES AUTOMÁTICAS DEL CATÁLOGO
+=================================================
+
+Este parche es para el repositorio:
+https://github.com/erjuandy89-max/1000-goles-android
+
+¿QUÉ HACE?
+- Al abrir la nueva versión de 1000 Goles, intenta descargar catalogo/actualizaciones.json
+  del repositorio público de GitHub, usando HTTPS (API oficial GitHub).
+- Si añades o corriges registros en ese JSON e incrementas «revision», el cambio
+  se aplicará automáticamente al volver a abrir la aplicación con Internet.
+- Guarda la última revisión en el almacenamiento de la app y la usa sin conexión.
+- Conserva las cifras contrastadas: una corrección sin fuente oficial no sobrescribe
+  los goles de club marcados como «source_checked».
+- Conserva el juego base, las partidas, los niveles Aficionado/Medio/Experto y las
+  importaciones de Wikidata y BeSoccer. No descarga ni ejecuta código remoto.
+
+INSTALAR EN EL REPOSITORIO DESDE EL MÓVIL (GITHUB CODESPACES)
+1. Abre tu Codespace del repositorio en el navegador (Brave, modo sitio de escritorio).
+2. Sube este ZIP a la RAÍZ del repositorio.
+3. Abre la terminal de Codespaces y ejecuta:
+
+   unzip -o 1000_Goles_Actualizacion_Automatica.zip
+   python3 aplicar_actualizacion.py
+   git add app/src/main/assets/actualizaciones.js catalogo/actualizaciones.json app/src/main/java/com/juandy/milgoles/MainActivity.java app/build.gradle
+   git commit -m "Permitir actualizar el catálogo de 1000 Goles por Internet"
+   git push
+
+4. GitHub Actions generará automáticamente un APK nuevo en la sección Actions.
+   Tendrás que instalar ESE APK UNA VEZ para activar esta función.
+5. Después, para cambiar datos, edita en GitHub «catalogo/actualizaciones.json»
+   (incrementando «revision») y confirma los cambios. No generes un APK nuevo.
+
+IMPORTANTE SOBRE EL APK YA INSTALADO
+- El APK anterior no puede adquirir esta nueva función sin instalar una versión nueva.
+- Si el APK antiguo fue firmado con una clave de depuración distinta, Android puede
+  rechazar instalar el nuevo encima. ¡EXPORTA TUS PARTIDAS / DATOS antes de desinstalar!
+- Las instalaciones futuras deberían firmarse con una clave estable si quieres
+  actualizar el código sin desinstalar. Esta mejora no cambia todavía la firma.
+
+MODELO PARA AMPLIAR DATOS
+Abre «catalogo/actualizaciones.json» y añade clubs:
+{
+  "schemaVersion": 1,
+  "revision": 2,
+  "updatedAt": "2026-11-19",
+  "clubs": [
+    {
+      "id": "real_madrid",
+      "players": [
+        {
+          "name": "NOMBRE APELLIDOS DEL JUGADOR",
+          "clubGoals": 1,
+          "pos": "DEL",
+          "clubGoalVerification": { "status": "legacy_unaudited" }
+        }
+      ]
+    }
+  ]
+}
+Esto es solo un EJEMPLO DE FORMATO: no publiques datos inventados.
+
+Para una cifra oficialmente contrastada, incluye:
+  "clubGoalVerification": {
+    "status": "source_checked",
+    "sourceUrl": "https://fuente-oficial-verificable.example/...",
+    "sourceTitle": "Nombre de la fuente",
+    "checkedAt": "AAAA-MM-DD"
+  }
+La URL de ejemplo no se debe publicar: reemplázala por una fuente oficial real.
+
+PARA NUEVOS CLUBES
+Cada objeto «clubs» puede incluir:
+  "id", "name", "country", "primary", "secondary", "hint",
+  "currentSquad": {"sourceUrl": "https://..."},
+  "levels": ["medio", "experto"],
+  "players": [...]
+Los clubes nuevos entran siempre en Experto; incluye Medio/Aficionado en «levels»
+cuando corresponda. Los objetos existentes conservan el nivel salvo que se indique.
+
+LIMITACIONES
+- Los cambios de pantallas, reglas, botones o diseño requieren un nuevo APK.
+- El catálogo solo se carga por Internet si el repositorio sigue siendo público y
+  la API de GitHub está accesible (tiene límites por IP). El caché da modo sin conexión.
+- Para activar cambios sobre jugadores, debes modificar y publicar el archivo JSON.
+- No se han añadido goles sin contrastar ni inventados en este paquete.
