@@ -31,7 +31,7 @@ jobs:
 
       - name: Instalar plataforma Android 35
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          "$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -print -quit)" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - name: Comprobar archivo HTML del juego
         run: test -s app/src/main/assets/index.html
