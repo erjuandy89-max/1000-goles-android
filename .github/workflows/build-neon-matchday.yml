@@ -26,12 +26,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      
       - name: Preparar SDK Android
         uses: android-actions/setup-android@v3
         with:
           packages: 'platform-tools'
-
 
       - name: Instalar Android 36
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
@@ -48,17 +46,20 @@ jobs:
           unzip -q '1000_Goles_Neon_Matchday_Android_preparado_GitHub.zip' -d temporal
           test -f temporal/android/settings.gradle
           test -s temporal/android/app/src/main/assets/index.html
+          test -s temporal/android/app/src/main/assets/neon-theme.css
+          test -s temporal/android/app/src/main/assets/neon-hero.webp
           test -f temporal/android/app/src/main/java/com/erjuandy/goles1000/MainActivity.java
 
       - name: Ajustar SDK minimo del proyecto de pruebas
         run: |
           sed -i 's/minSdk 23/minSdk 24/' temporal/android/app/build.gradle
           grep -F 'minSdk 24' temporal/android/app/build.gradle
-          grep -F "applicationIdSuffix '.neonmatchday'" temporal/android/app/build.gradle
+          grep -F "applicationIdSuffix '.ultimatepique'" temporal/android/app/build.gradle
 
       - name: Verificar archivos y contenido Neon
         run: |
           python3 temporal/android/docs/verificar_proyecto.py
+          grep -F '¿Sabes más que Maldini?' temporal/android/app/src/main/assets/index.html
           if grep -q 'Configurar enlace online' temporal/android/app/src/main/assets/index.html; then
             echo 'ERROR: todavia hay configuracion tecnica de enlace online'
             exit 1
