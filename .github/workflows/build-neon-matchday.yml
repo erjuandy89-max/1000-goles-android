@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '1000_Goles_Neon_Matchday_Android_preparado_GitHub.zip'
+      - 'ultimate-global.css'
       - '.github/workflows/build-neon-matchday.yml'
 
 permissions:
@@ -49,6 +50,17 @@ jobs:
           test -s temporal/android/app/src/main/assets/neon-theme.css
           test -s temporal/android/app/src/main/assets/neon-hero.webp
           test -f temporal/android/app/src/main/java/com/erjuandy/goles1000/MainActivity.java
+
+      - name: Aplicar tema global desde raiz (opcional)
+        run: |
+          # Después de esta primera instalación, actualizar solo
+          # ultimate-global.css en la raiz permite generar otra APK.
+          if [ -s ultimate-global.css ]; then
+            cp ultimate-global.css temporal/android/app/src/main/assets/ultimate-global.css
+          fi
+          test -s temporal/android/app/src/main/assets/ultimate-global.css
+          grep -F 'ultimate-global.css' temporal/android/app/src/main/assets/index.html
+          grep -F 'applyGlobalOnlineTheme(view)' temporal/android/app/src/main/java/com/erjuandy/goles1000/MainActivity.java
 
       - name: Ajustar SDK minimo del proyecto de pruebas
         run: |
