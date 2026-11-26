@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '1000_Goles_Neon_Matchday_Android_preparado_GitHub.zip'
+      - '1000_Goles_Neon_Matchday_Android_preparado_GitHub*.zip'
       - 'ultimate-global.css'
       - '.github/workflows/build-neon-matchday.yml'
 
@@ -42,9 +42,13 @@ jobs:
 
       - name: Descomprimir proyecto Neon del ZIP
         run: |
-          test -s '1000_Goles_Neon_Matchday_Android_preparado_GitHub.zip'
+          # Detecta el ZIP correcto aunque el movil le haya anadido (1), (2), etc.
+          PROJECT_ZIP="$(find . -maxdepth 1 -type f -name '1000_Goles_Neon_Matchday_Android_preparado_GitHub*.zip' -printf '%f\n' | sort -V | tail -n 1)"
+          echo "Proyecto seleccionado: $PROJECT_ZIP"
+          test -n "$PROJECT_ZIP"
+          test -s "$PROJECT_ZIP"
           mkdir -p temporal
-          unzip -q '1000_Goles_Neon_Matchday_Android_preparado_GitHub.zip' -d temporal
+          unzip -q "$PROJECT_ZIP" -d temporal
           test -f temporal/android/settings.gradle
           test -s temporal/android/app/src/main/assets/index.html
           test -s temporal/android/app/src/main/assets/neon-theme.css
